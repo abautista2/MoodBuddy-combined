@@ -45,32 +45,31 @@ export const getResponse = async (message) => {
   return { type: "ai", response: await aiFallback(message) };
 };
 
-// AI fallback function (ChatGPT API)
-const aiFallback = async (message) => {
+export const aiFallback = async (message) => {
   try {
     const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium-therapy",
       {
-        model: "gpt-3.5-turbo", // or 'gpt-4'
-        messages: [
-          {
-            role: "system",
-            content: "You are a mental health support chatbot. Provide empathetic and helpful responses."
-          },
-          { role: "user", content: message }
-        ]
+        inputs: {
+          text: message,
+          past_user_inputs: [],
+          generated_responses: []
+        },
+        parameters: {
+          max_length: 100,
+          temperature: 0.9
+        }
       },
       {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}` // Secure API key handling
-        }
+          Authorization: `Bearer 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`,
+        },
       }
     );
 
-    return response.data.choices[0].message.content;
+    return response.data.generated_text;
   } catch (error) {
-    console.error("AI Fallback Error:", error);
-    return "Sorry, I couldn't process that. Can you try rephrasing?";
+    console.error("Therapy Model Error:", error.response?.data || error.message);
+    return "Could you rephrase that? I want to make sure I understand.";
   }
 };
