@@ -2,13 +2,9 @@ import { View, StyleSheet } from "react-native";
 import React from "react";
 import HabitBuilder from "@/components/HabitBuilder";
 
-
-
 export default function Habit() {
-
   return (
-    <View style = {styles.container}>
-      
+    <View style={styles.container}>
       <HabitBuilder label="Add a habit" />
     </View>
   );
@@ -19,9 +15,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#25292e"
+    backgroundColor: "#25292e", // Dark gray background
   },
-  text: {
-    color: "white"
-  },
-})
+});

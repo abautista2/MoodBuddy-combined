@@ -1,235 +1,296 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, Modal, TextInput, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  TextInput,
+  StyleSheet,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Habit = {
-    name: string;
-    completed: boolean;
+  name: string;
+  completed: boolean;
 };
 
 type Props = {
-    label: string;
+  label: string;
 };
 
 export default function HabitBuilder({ label }: Props) {
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [text, setText] = useState('');
-    const [habitList, setHabitList] = useState<Habit[]>([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [text, setText] = useState("");
+  const [habitList, setHabitList] = useState<Habit[]>([]);
 
-    // Loads habit
-    useEffect(() => {
-        const loadHabits = async () => {
-            try {
-                const storedHabits = await AsyncStorage.getItem('@habits');
-                if (storedHabits !== null) {
-                    setHabitList(JSON.parse(storedHabits));
-                }
-            } catch (error) {
-                console.error('Error loading habits:', error);
-            }
-        };
-        loadHabits();
-    }, []);
-
-    // Saves habit
-    useEffect(() => {
-        const saveHabits = async () => {
-            try {
-                await AsyncStorage.setItem('@habits', JSON.stringify(habitList));
-            } catch (error) {
-                console.error('Error saving habits:', error);
-            }
-        };
-        saveHabits();
-    }, [habitList]);
-
-    // Adds habit
-    const addHandler = () => {
-        if (text.trim() !== '') {
-            const newHabit: Habit = { name: text, completed: false };
-            setHabitList([...habitList, newHabit]);
-            setText('');
-            setShowConfirmation(false);
+  // Load habits from AsyncStorage
+  useEffect(() => {
+    const loadHabits = async () => {
+      try {
+        const storedHabits = await AsyncStorage.getItem("@habits");
+        if (storedHabits !== null) {
+          setHabitList(JSON.parse(storedHabits));
         }
+      } catch (error) {
+        console.error("Error loading habits:", error);
+      }
     };
+    loadHabits();
+  }, []);
 
-    // Removes habit
-    const removeHandler = (habitToRemove: string) => {
-        const updatedList = habitList.filter((item) => item.name !== habitToRemove);
-        setHabitList(updatedList);
+  // Save habits to AsyncStorage
+  useEffect(() => {
+    const saveHabits = async () => {
+      try {
+        await AsyncStorage.setItem("@habits", JSON.stringify(habitList));
+      } catch (error) {
+        console.error("Error saving habits:", error);
+      }
     };
+    saveHabits();
+  }, [habitList]);
 
-    return (
-        <View style={styles.centerAll}>
-            <View style={[styles.text, { color: '#fff' }]}>
-                <Text style={styles.h1}>Habit List</Text>
-                {habitList.map((item, index) => (
-                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={styles.h2}>{item.name}</Text>
-                        <Pressable onPress={() => removeHandler(item.name)}>
-                            <FontAwesome
-                                name="minus"
-                                size={18}
-                                color="#fff"
-                                style={styles.buttonIcon}
-                            />
-                        </Pressable>
-                    </View>
-                ))}
-            </View>
-            <View style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}>
-                <Modal
-                    visible={showConfirmation}
-                    transparent
-                    onRequestClose={() => setShowConfirmation(false)}
-                    animationType="slide"
-                >
-                    <View style={styles.centeredView}>
-                        <View style={styles.confirmationModal}>
-                            <View style={styles.confirmationTitle}>
-                                <Text style={styles.text}>Add Habit</Text>
-                            </View>
-                            <View style={styles.confirmationBody}>
-                                <Text style={styles.text}>What habit do you want to add?</Text>
-                                <TextInput
-                                    style={{ height: 40, padding: 5, borderWidth: 1, margin: 10 }}
-                                    placeholder="Enter new habit here"
-                                    onChangeText={setText}
-                                    value={text}
-                                />
-                            </View>
-                            <View style={[{ flexDirection: "row" }, styles.bottomConfirmation]}>
-                                <View style={styles.cancelButton}>
-                                    <Pressable
-                                        onPress={() => setShowConfirmation(false)}
-                                        style={styles.cancelButton}
-                                    >
-                                        <Text style={styles.text}>Cancel</Text>
-                                    </Pressable>
-                                </View>
-                                <View style={styles.confirmationButton}>
-                                    <Pressable
-                                        onPress={addHandler}
-                                        style={styles.confirmationButton}
-                                    >
-                                        <Text style={styles.text}>Add</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
+  // Add a new habit
+  const addHandler = () => {
+    if (text.trim() !== "") {
+      const newHabit: Habit = { name: text, completed: false };
+      setHabitList([...habitList, newHabit]);
+      setText("");
+      setShowConfirmation(false);
+    }
+  };
 
-                <Pressable
-                    style={[styles.button, { backgroundColor: "#fff" }]}
-                    onPress={() => setShowConfirmation(true)}
-                >
-                    <FontAwesome
-                        name="plus"
-                        size={18}
-                        color="#25292e"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={[styles.buttonLabel, { color: "#25292e" }]}>
-                        {label}
-                    </Text>
-                </Pressable>
-            </View>
-        </View>
+  // Remove a habit
+  const removeHandler = (habitToRemove: string) => {
+    const updatedList = habitList.filter((item) => item.name !== habitToRemove);
+    setHabitList(updatedList);
+  };
+
+  // Toggle habit completion
+  const toggleCompletion = (habitName: string) => {
+    setHabitList(
+      habitList.map((habit) =>
+        habit.name === habitName
+          ? { ...habit, completed: !habit.completed }
+          : habit
+      )
     );
+  };
+
+  return (
+    <View style={styles.centerAll}>
+      {/* Habit List */}
+      <View style={styles.listContainer}>
+        <Text style={styles.h1}>Habit List</Text>
+        {habitList.length === 0 ? (
+          <Text style={styles.emptyText}>No habits yet. Add one to start!</Text>
+        ) : (
+          habitList.map((item, index) => (
+            <View key={index} style={styles.habitCard}>
+              <Text style={styles.h2}>{item.name}</Text>
+              <Pressable onPress={() => removeHandler(item.name)}>
+                <FontAwesome name="minus" size={18} color="#FF6F61" />
+              </Pressable>
+            </View>
+          ))
+        )}
+      </View>
+
+      {/* Add Habit Button */}
+      <View style={styles.buttonContainer}>
+        <Modal
+          visible={showConfirmation}
+          transparent
+          onRequestClose={() => setShowConfirmation(false)}
+          animationType="slide"
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.confirmationModal}>
+              <View style={styles.confirmationTitle}>
+                <Text style={styles.modalTitleText}>Add Habit</Text>
+              </View>
+              <View style={styles.confirmationBody}>
+                <Text style={styles.modalBodyText}>
+                  What habit do you want to add?
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter new habit here"
+                  placeholderTextColor="#D3D3D3"
+                  onChangeText={setText}
+                  value={text}
+                />
+              </View>
+              <View style={styles.bottomConfirmation}>
+                <Pressable
+                  onPress={() => setShowConfirmation(false)}
+                  style={styles.cancelButton}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </Pressable>
+                <Pressable onPress={addHandler} style={styles.confirmationButton}>
+                  <Text style={styles.buttonText}>Add</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Pressable
+          style={styles.button}
+          onPress={() => setShowConfirmation(true)}
+        >
+          <FontAwesome name="plus" size={18} color="#25292e" style={styles.buttonIcon} />
+          <Text style={styles.buttonLabel}>{label}</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    text: {
-        color: "#000000",
-        fontSize: 20,
-        margin: 10,
-        textAlign: "center",
-    },
-    h1: {
-        color: "#FFFFFF",
-        fontSize: 40,
-        margin: 10,
-        textAlign: "center",
-    },
-    h2: {
-        color: "#FFFFFF",
-        fontSize: 20,
-        margin: 10,
-        textAlign: "center",
-    },
-    buttonContainer: {
-        width: 320,
-        height: 68,
-        marginHorizontal: 20,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 3,
-    },
-    button: {
-        borderRadius: 10,
-        width: "100%",
-        height: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "row",
-    },
-    buttonLabel: {
-        color: "#fff",
-        fontSize: 16,
-    },
-    buttonIcon: {
-        paddingRight: 8,
-    },
-    confirmationModal: {
-        width: 300,
-        height: 300,
-        backgroundColor: "#ffffff",
-        borderWidth: 1,
-        borderColor: "#000",
-        borderRadius: 20,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#00000099",
-    },
-    centerAll: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    confirmationTitle: {
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#ff0",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    confirmationBody: {
-        height: 200,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    bottomConfirmation: {
-        height: 50,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#ff0",
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-    },
-    confirmationButton: {
-        alignItems: "center",
-        justifyContent: "center",
-        width: "50%"
-    },
-    cancelButton: {
-        alignItems: "center",
-        justifyContent: "center",
-        width: "50%"
-    },
+  centerAll: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  listContainer: {
+    width: 320,
+    marginBottom: 20,
+  },
+  h1: {
+    color: "#FFFFFF",
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  h2: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    flex: 1, // Allows text to take available space
+  },
+  habitCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#33373d",
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 5,
+  },
+  checkbox: {
+    marginRight: 10,
+  },
+  emptyText: {
+    color: "#D3D3D3",
+    fontSize: 18,
+    textAlign: "center",
+  },
+  buttonContainer: {
+    width: 320,
+    height: 60,
+    marginHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  button: {
+    borderRadius: 10,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    backgroundColor: "#FFD700", // Gold
+    elevation: 3, // Android shadow
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  buttonLabel: {
+    color: "#25292e",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  buttonIcon: {
+    paddingRight: 8,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00000099",
+  },
+  confirmationModal: {
+    width: 300,
+    height: 300,
+    backgroundColor: "#33373d", // Darker modal background
+    borderWidth: 1,
+    borderColor: "#FFD700", // Gold border
+    borderRadius: 20,
+  },
+  confirmationTitle: {
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFD700", // Gold header
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalTitleText: {
+    color: "#25292e",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  confirmationBody: {
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#33373d",
+  },
+  modalBodyText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  input: {
+    height: 40,
+    width: 250,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#FFD700",
+    borderRadius: 8,
+    color: "#FFFFFF",
+    backgroundColor: "#25292e",
+    marginVertical: 10,
+  },
+  bottomConfirmation: {
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  confirmationButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+    backgroundColor: "#FF6F61", // Coral for "Add"
+    height: "100%",
+    borderBottomRightRadius: 20,
+  },
+  cancelButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+    backgroundColor: "#D3D3D3", // Gray for "Cancel"
+    height: "100%",
+    borderBottomLeftRadius: 20,
+  },
+  buttonText: {
+    color: "#25292e",
+    fontSize: 16,
+    fontWeight: "500",
+  },
 });
