@@ -6,7 +6,6 @@ import { useIsFocused } from '@react-navigation/native';
 import data from "@/assets/quotes.json";
 import { Calendar } from 'react-native-calendars'; 
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from 'react-native-safe-area-context'; // Add this for safe areas
 
 const arrMin = 1;
 const arrMax = data.quotes.length - 1;
@@ -115,17 +114,18 @@ export default function HomeScreen() {
     };
 
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+            colors={["#1a1d21", "#2f3439", "#3d4450"]}
+            style={styles.gradient}
+          >
         <ScrollView 
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          <LinearGradient
-            colors={["#25292e", "#2f3439", "#1a1d21"]}
-            style={styles.gradient}
-          >
+          
             <View style={styles.content}>
               <View style={styles.quoteContainer}>
+                <FontAwesome name="lightbulb-o" size={24} color="#FFD700" style={styles.quoteIcon} />
                 <Text style={styles.quoteText}>"{ranArray.quote}"</Text>
                 <Text style={styles.authorText}>— {ranArray.author}</Text>
               </View>
@@ -145,11 +145,16 @@ export default function HomeScreen() {
                     textDisabledColor: 'rgba(255, 255, 255, 0.3)',
                     dayTextColor: '#ffffff',
                     textDayFontWeight: '400',
+                    dotColor: '#4CAF50',
+                    markedDotColor: '#FFD700',
+                    dotSize: 6,
+                    markedDotSize: 8,
                   }}
                 />
               </View>
 
               <View style={styles.streakContainer}>
+                <FontAwesome name="fire" size={18} color="#4CAF50" style={styles.streakIcon} />
                 <Text style={styles.streakText}>Current Streak: {streak} days</Text>
               </View>
 
@@ -186,19 +191,15 @@ export default function HomeScreen() {
                 ))
               )}
             </View>
-          </LinearGradient>
+          
         </ScrollView>
-      </SafeAreaView>
+      </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#25292e', // Match gradient start color to avoid flashes
-  },
   contentContainer: {
-    padding: 20, // Move padding here for content spacing
+    padding: 20,
   },
   gradient: {
     flex: 1,
@@ -210,48 +211,60 @@ const styles = StyleSheet.create({
   quoteContainer: {
     marginBottom: 25,
     padding: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  quoteIcon: {
+    marginBottom: 10,
   },
   quoteText: {
     color: '#ffffff',
-    fontSize: 22,
+    fontSize: 26,
+    fontWeight: '600',
     fontStyle: 'italic',
     textAlign: 'center',
-    lineHeight: 28,
+    lineHeight: 32,
     marginBottom: 10,
   },
   authorText: {
-    color: '#B0B0B0',
-    fontSize: 16,
+    color: '#D3D3D3',
+    fontSize: 18,
     textAlign: 'center',
     fontStyle: 'italic',
   },
   calendarContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 15,
     padding: 10,
     marginBottom: 25,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
   calendar: {
     borderRadius: 10,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
     color: '#ffffff',
     marginBottom: 20,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   habitItem: {
     flexDirection: 'row',
@@ -275,7 +288,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   habitText: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#212121',
     flex: 1,
     fontWeight: '500',
@@ -283,6 +296,7 @@ const styles = StyleSheet.create({
   completedHabitText: {
     textDecorationLine: 'line-through',
     color: '#757575',
+    opacity: 0.7,
   },
   noHabitsText: {
     fontSize: 16,
@@ -294,13 +308,25 @@ const styles = StyleSheet.create({
   streakContainer: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 10,
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#4CAF50',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  streakIcon: {
+    marginRight: 8,
   },
   streakText: {
     color: '#4CAF50',
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
   },
 });

@@ -6,7 +6,7 @@ import HabitBuilder from "@/components/HabitBuilder";
 export default function Habit() {
   return (
     <LinearGradient
-      colors={["#25292e", "#2f3439", "#1a1d21"]} // Subtle dark gradient
+    colors={["#1a1d21", "#2f3439", "#3d4450"]} // Subtle dark gradient
       style={styles.container}
     >
       <View style={styles.innerContainer}>
